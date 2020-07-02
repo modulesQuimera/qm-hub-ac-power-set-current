@@ -1,0 +1,38 @@
+<script type="text/javascript">
+    RED.nodes.registerType('set_current',{
+        category: 'AC Power Source',
+        color: '#FFDAB9',
+        defaults:{
+            Name:{
+                value:""
+            }
+            current_value:{
+                value:""
+            },
+        },
+        inputs:1,
+        outputs:1,
+        icon:  "font-awesome/fa-bars",
+        label: function() { return this.name || "set_current" },
+        paletteLabel: "set_current",
+        
+        });    
+
+</script>
+
+<script type="text/html" data-template-name="set_current">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <br>
+    <div class= "form-row">
+        <label for="node-input-current_value" style="margin-left: 7%"><i class="fa fa-tag"></i> current value</label>
+        <input type="text" step="any" id="node-input-current_value" placeholder="current_value" style="width:32%; margin-left: -40px">
+    </div>
+</script>
+
+
+<script type="text/html" data-help-name="set_current">
+    <p>Working on it...</p>
+</script>

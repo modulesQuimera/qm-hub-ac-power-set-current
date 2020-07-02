@@ -1,0 +1,25 @@
+{
+  "name": "qm-hub-ac-power-set-current",
+  "version": "1.0.0",
+  "description": "set current",
+  "main": "set_current.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/modulesQuimera/qm-hub-ac-power-set-current.git"
+  },
+  "keywords": ["quimera","hub","JIG"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/modulesQuimera/qm-hub-ac-power-set-current/issues"
+  },
+  "homepage": "https://github.com/modulesQuimera/qm-hub-ac-power-set-current#readme",
+  "node-red" : {
+    "nodes": {
+        "set_current": "set_current.js"
+    }
+  }
+}
