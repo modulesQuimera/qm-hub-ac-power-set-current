@@ -1,24 +1,58 @@
 <script type="text/javascript">
     RED.nodes.registerType('set_current',{
-        category: 'AC Power Source',
-        color: '#FFDAB9',
+        category: 'AC Power Module',
+        color: '#FA8072',
         defaults:{
             Name:{
                 value:""
-            }
+            },
             current_value:{
                 value:""
             },
         },
         inputs:1,
         outputs:1,
-        icon:  "font-awesome/fa-bars",
-        label: function() { return this.name || "set_current" },
-        paletteLabel: "set_current",
+        icon:  "./icons/Set_Current.svg",
+        label: function() { return this.name || "Set Current" },
+        paletteLabel: "Set Current",
         
         });    
 
 </script>
+<style>
+
+
+    label{
+        width: 50% !important;
+        margin-bottom: 2px !important;
+    }
+
+    .columm{
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    hr {
+    width: 40% !important;
+    float: left !important;
+    }
+
+    .hr-div-voltages{
+        display: flex !important;
+        justify-content: space-between !important;
+        margin-top: 220px !important;
+    }
+
+    .optional{
+        height: max-content !important;
+        margin-top: 10px !important;
+    }
+
+    .descript{
+        text-align: center;
+    }
+
+</style>
 
 <script type="text/html" data-template-name="set_current">
     <div class="form-row">
@@ -26,9 +60,20 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <br>
-    <div class= "form-row">
-        <label for="node-input-current_value" style="margin-left: 7%"><i class="fa fa-tag"></i> current value</label>
-        <input type="text" step="any" id="node-input-current_value" placeholder="current_value" style="width:32%; margin-left: -40px">
+    <div class="form-row columm">
+        <div class="form-row ">
+        <label for="node-input-current_value"><i class="fa fa-expand"></i> VC    </>
+        <input type="number" step="any" min="0" max="14" id="node-input-current_value" placeholder="current_value" style="width:39%;">
+    </div>
+    <div class="hr-div-voltages">
+        <hr>
+        <span class="optional">Optional</span>
+        <hr>
+    </div>
+
+    <div class="form-row columm">
+        <label style="width: 50% !important;" for="node-input-name" ><i class="fa fa-tag"></i> Component Nickname</label>
+        <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 

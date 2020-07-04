@@ -3,7 +3,7 @@ module.exports = function(RED) {
     function SetCurrentNode(config) {
         RED.nodes.createNode(this, config);
         var node = this
-        node.current_value = config.current_value
+        this.current_value = config.current_value
 
         node.on('input', function(msg, send, done) {
             var globalContext = node.context().global;
