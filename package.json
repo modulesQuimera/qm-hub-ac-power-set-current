@@ -1,5 +1,5 @@
 {
-  "name": "qm-hub-ac-power-set-current",
+  "name": "qm-ac-power-set-current",
   "version": "1.0.3",
   "description": "Component set current | AC Power Source Module | Node-red",
   "main": "set_current.js",
