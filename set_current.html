@@ -3,7 +3,7 @@
         category: 'AC Power Module',
         color: '#FA8072',
         defaults:{
-            Name:{
+            name:{
                 value:""
             },
             current_value:{
@@ -13,15 +13,12 @@
         },
         inputs:1,
         outputs:1,
-        icon:  "Set_Current.svg",
-        label: function() { return this.name || "Set Current" },
+        icon:  "AC_Power.svg",
+        label: function() { return this.name? "Set Current - " + this.name: "Set Current" },
         paletteLabel: "Set Current",
-        oneditprepare: function() {
-            $.getJSON('getMapeamentoACPower',function(data) {
-                console.log(data)
-                document.getElementById("IABC").innerText = data[3].label;
-            })
-        },
+        // oneditprepare: function() {
+        //     $('.VA').html(this.current_value);
+        // },
     });    
 
 </script>
@@ -69,21 +66,18 @@
 
     <div class="form-row columm">
         <strong class="descript">
-            Set current is used to assing the current value.
+            Programs a current value that will be used
         </strong>
     </div>
     <!-- <label class="VA"></label> -->
     <div class="form-row columm">
         <label  for="node-input-slot"><i class="fa fa-sliders"></i> Slot</label>
-        <input type="number" min="0" id="node-input-slot" style="width:20%;">
+        <input type="number" id="node-input-slot" style="width:20%;">
     </div>
-    <div class="form-row columm">
-        <div class="form-row ">
-            <div>
-                <label for="node-input-current_value" id="IABC"><i class="fa fa-expand"></i></label>
-            </div>
-            <input type="number" step="any" min="0" max="14" id="node-input-current_value" placeholder="current_value" style="width:39%;">
-        </div>
+
+    <div class= "form-row columm">
+        <label for="node-input-current_value" ><i class="fa fa-tag"></i> current value</label>
+        <input type="number" step="any" min="0" max="14" id="node-input-current_value" placeholder="current_value" style="width:39%;">
     </div>
 
     <div class="hr-div-setCurrent">
@@ -100,5 +94,5 @@
 
 
 <script type="text/html" data-help-name="set_current">
-    <p>Working on it...</p>
+    <p>Programs a current value that will be used.</p>
 </script>
