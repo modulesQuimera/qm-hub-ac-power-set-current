@@ -3,95 +3,455 @@
         category: 'AC Power Module',
         color: '#FA8072',
         defaults:{
-            name:{
-                value:""
-            },
-            current_value:{
-                value:""
-            },
-            slot:{value:"", required:true}
+            name:{value:""},
+            current_value:{value:""},
+            slot:{value:"", required:true},
+
+            qtdSetCurrent:{value:0},
+            controle:{value:0},
+            current_value1:{value:""},
+            current_value2:{value:""},
+            current_value3:{value:""},
+            current_value4:{value:""},
+            current_value5:{value:""},
+            current_value6:{value:""},
+            current_value7:{value:""},
+            current_value8:{value:""},
+            current_value9:{value:""},
+            current_value10:{value:""},
+            current_value11:{value:""},
+            current_value12:{value:""},
+            current_value13:{value:""},
+            current_value14:{value:""},
+            current_value15:{value:""},
+            current_value16:{value:""},
+            current_value17:{value:""},
+            current_value18:{value:""},
+            current_value19:{value:""},
+            current_value20:{value:""},
+            current_value21:{value:""},
+            current_value22:{value:""},
+            current_value23:{value:""},
+            current_value24:{value:""}
         },
         inputs:1,
         outputs:1,
         icon:  "AC_Power.svg",
         label: function() { return this.name? "Set Current - " + this.name: "Set Current" },
         paletteLabel: "Set Current",
-        // oneditprepare: function() {
-        //     $('.VA').html(this.current_value);
-        // },
+        oneditprepare: function() {
+            var self = this;
+            self.controle = self.qtdSetCurrent;
+
+            for(var i=1; i<=self.controle; i++){
+                $(".setcurrent"+i).show();
+            }
+            if(!self.controle || self.controle < 0){
+                self.controle = 0;
+            }
+            $("#addSetCurrent").click(function(){
+                self.controle = self.controle+1 <= 24 ? self.controle + 1 : 24;
+
+                $(".setcurrent"+self.controle).show();
+                console.log(self.controle);
+            });
+            $("#remSetCurrent").click(function(){
+                $(".setcurrent"+self.controle).hide();
+                self.controle = self.controle-1 >= 0 ? self.controle - 1 : 0;
+                console.log(self.controle);
+            });
+        },
+        oneditsave: function() {
+            this.qtdSetCurrent = this.controle;
+        }
     });    
 
 </script>
 <style>
-
-
     label{
-        width: 50% !important;
+        width: 100% !important;
         margin-bottom: 2px !important;
     }
-
+    .columm{
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    hr {
+        width: 40% !important;
+        float: left !important;
+    }
+    .hr-div-setCurrent{
+        display: flex !important;
+        justify-content: space-between !important;
+        /* margin-top: 400px !important; */
+    }
+    .optional{
+        height: max-content !important;
+        margin-top: 10px !important;
+    }
+    .descript{
+        text-align: center;
+    }
     .columm{
         display: flex !important;
         flex-direction: column !important;
     }
 
-    hr {
-    width: 40% !important;
-    float: left !important;
-    }
 
-    .hr-div-setCurrent{
+    .columm-30{
         display: flex !important;
-        justify-content: space-between !important;
-        margin-top: 400px !important;
+        flex-direction: column !important;
+        width: 30% !important;
+        float: left !important;
+    }
+    .columm-50{
+        display: flex !important;
+        flex-direction: column !important;
+        width: 50% !important;
+        float: left !important;
     }
 
-    .optional{
-        height: max-content !important;
-        margin-top: 10px !important;
+
+    .columm-70{
+        display: flex !important;
+        flex-direction: column !important;
+        width: 70% !important;
+        float: left !important;
     }
 
-    .descript{
-        text-align: center;
+    .descript-div{
+        max-width: 444px !important;
+    }
+
+    span.red-ui-typedInput-type-label {
+    /* background: chartreuse; */
+    /* display: block; */
+    width: 250px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    }
+
+    .btn-aln{
+        display: flex !important;
+        flex-direction: row-reverse !important;
+        /* padding-left: 30px; */
+        align-content: center;
+        align-items: flex-end;
     }
 
 </style>
 
 <script type="text/html" data-template-name="set_current">
-    <!-- <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <br> -->
-
-    <div class="form-row columm">
+    <div class="form-row columm descript-div">
         <strong class="descript">
             Programs a current value that will be used
         </strong>
     </div>
-    <!-- <label class="VA"></label> -->
+    <div style=" position: relative; display:flex; margin-top: 20px;">
+        <div class="form-row columm-70">
+            <label style="width: 50% !important;" for="node-input-name" ><i class="fa fa-tag"></i> Identification Note</label>
+            <input type="text" id="node-input-name" placeholder="Name" style="width: 100%">
+        </div>
+        <div class="form-row columm-30" style="align-items: flex-end !important;">
+            <label style="width: max-content !important; padding-right: 24px;"><i class="fa fa-list-ul"></i> Item</label>
+            <div class="form-row btn-aln" >
+                <a id="addSetCurrent" class="red-ui-button" ><i class="fa fa-plus"></i></a>
+                <a id="remSetCurrent" class="red-ui-button" style="margin-right: 5px;" ><i class="fa fa-minus"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="form-row" style="display:flex; justify-content: space-between;">
+        <button  class="btn-uni btn-add"  type="button" id="addSetCurrent"> <i class="fa fa-plus" style="margin-right: 5px; font-size: 15px;"></i></button>
+        <button class="btn-uni btn-remove"   type="button" id="remSetCurrent"> <i class="fa fa-trash" style="margin-right: 10px; font-size: 15px;"></i></button>
+    </div> -->
+    <div class="hr-div-setCurrent">
+        <hr>
+        <span class="optional">Current 0</span>
+        <hr>
+    </div>
     <div class="form-row columm">
         <label  for="node-input-slot"><i class="fa fa-sliders"></i> Slot</label>
         <input type="number" id="node-input-slot" style="width:20%;">
     </div>
-
     <div class= "form-row columm">
         <label for="node-input-current_value" ><i class="fa fa-tag"></i> current value</label>
         <input type="number" step="any" min="0" max="14" id="node-input-current_value" placeholder="current_value" style="width:39%;">
     </div>
-
-    <div class="hr-div-setCurrent">
+    <div class="setcurrent1" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 1</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value1 columm">
+            <label for="node-input-current_value1"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value1" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent2" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 2</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value2 columm">
+            <label for="node-input-current_value2"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value2" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent3" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 3</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value3 columm">
+            <label for="node-input-current_value3"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value3" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent4" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 4</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value4 columm">
+            <label for="node-input-current_value4"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value4" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent5" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 5</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value5 columm">
+            <label for="node-input-current_value5"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value5" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent6" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 6</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value6 columm">
+            <label for="node-input-current_value6"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value6" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent7" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 7</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value7 columm">
+            <label for="node-input-current_value7"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value7" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent8" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 8</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value8 columm">
+            <label for="node-input-current_value8"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value8" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent9" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 9</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value9 columm">
+            <label for="node-input-current_value9"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value9" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent10" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 10</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value10 columm">
+            <label for="node-input-current_value10"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value10" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent11" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 11</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value11 columm">
+            <label for="node-input-current_value11"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value11" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent12" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 12</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value12 columm">
+            <label for="node-input-current_value12"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value12" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent13" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 13</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value13 columm">
+            <label for="node-input-current_value13"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value13" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent14" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 14</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value14 columm">
+            <label for="node-input-current_value14"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value14" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent15" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 15</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value15 columm">
+            <label for="node-input-current_value15"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value15" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent16" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 16</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value16 columm">
+            <label for="node-input-current_value16"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value16" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent17" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 17</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value17 columm">
+            <label for="node-input-current_value17"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value17" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent18" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 18</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value18 columm">
+            <label for="node-input-current_value18"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value18" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent19" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 19</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value19 columm">
+            <label for="node-input-current_value19"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value19" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent20" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 20</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value20 columm">
+            <label for="node-input-current_value20"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value20" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent21" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 21</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value21 columm">
+            <label for="node-input-current_value21"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value21" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent22" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 22</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value22 columm">
+            <label for="node-input-current_value22"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value22" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent23" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 23</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value23 columm">
+            <label for="node-input-current_value23"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value23" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <div class="setcurrent24" style="display: none;">
+        <div class="hr-div-setCurrent">
+            <hr>
+            <span class="optional">Current 24</span>
+            <hr>
+        </div>
+        <div class="form-row node-input-current_value24 columm">
+            <label for="node-input-current_value24"><i class="fa fa-sign-out"></i> current Value</label>
+            <input  id="node-input-current_value24" type="number" required="required"   min="0" max="360" style="width: 30%;">
+        </div>
+    </div>
+    <!-- <div class="hr-div-setCurrent">
         <hr>
         <span class="optional">Optional</span>
         <hr>
     </div>
-
     <div class="form-row columm">
         <label style="width: 50% !important;" for="node-input-name" ><i class="fa fa-tag"></i> Component Nickname</label>
         <input type="text" id="node-input-name" placeholder="Name">
-    </div>
+    </div> -->
 </script>
-
 
 <script type="text/html" data-help-name="set_current">
     <p>Programs a current value that will be used.</p>
