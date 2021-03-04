@@ -4,41 +4,19 @@
         color: '#FA8072',
         defaults:{
             name:{value:""},
-            current_value:{value:""},
-            slot:{value:"", required:true},
             mapeamento: { value: "", type: "mapping-voltage" },
+            type_mode: {value: 'mono'},
+            c_select: { value: 'IA' },
+            IA: { value: false },
+            IB: { value: false },
+            IC: { value: false },
+            IA_value: { value: "" },
+            IB_value: { value: "" },
+            IC_value: { value: "" },
+            IA_value_solo: { value: ""},
+            IB_value_solo: { value: ""},
+            IC_value_solo: { value: ""}
 
-
-            phase_selector1: { value: "" },
-            phase_selector2: { value: "" },
-            phase_selector3: { value: "" },
-            phase_selector4: { value: "" },
-            // qtdSetCurrent:{value:0},
-            // controle:{value:0},
-            // current_value1:{value:""},
-            // current_value2:{value:""},
-            // current_value3:{value:""},
-            // current_value4:{value:""},
-            // current_value5:{value:""},
-            // current_value6:{value:""},
-            // current_value7:{value:""},
-            // current_value8:{value:""},
-            // current_value9:{value:""},
-            // current_value10:{value:""},
-            // current_value11:{value:""},
-            // current_value12:{value:""},
-            // current_value13:{value:""},
-            // current_value14:{value:""},
-            // current_value15:{value:""},
-            // current_value16:{value:""},
-            // current_value17:{value:""},
-            // current_value18:{value:""},
-            // current_value19:{value:""},
-            // current_value20:{value:""},
-            // current_value21:{value:""},
-            // current_value22:{value:""},
-            // current_value23:{value:""},
-            // current_value24:{value:""}
         },
         inputs:1,
         outputs:1,
@@ -48,38 +26,102 @@
         oneditprepare: function() {
             var self = this;
 
-            var config_mapeamento = RED.nodes.node(this.mapeamento)
-            console.log(config_mapeamento)
+            var config_mapeamento = RED.nodes.node(this.mapeamento);
             if (config_mapeamento) {
-                document.getElementById("VA").innerText = "VA - PINX - TP" + config_mapeamento.labelPort1 + " - " + config_mapeamento.labelPort1A; 
-                document.getElementById("VB").innerText = "VB - PINX - TP" + config_mapeamento.labelPort2 + " - " + config_mapeamento.labelPort2A; 
-                document.getElementById("VC").innerText = "VC - PINX - TP" + config_mapeamento.labelPort3 + " - " + config_mapeamento.labelPort3A; 
+                document.getElementById("IA").innerHTML = `IA+ PIN - 1 <br> ${config_mapeamento.connectorIAp} - ${config_mapeamento.labelIAp}`;
+                document.getElementById("IB").innerHTML = `IB+ PIN - 1 <br> ${config_mapeamento.connectorIBp} - ${config_mapeamento.labelIBp}`;
+                document.getElementById("IC").innerHTML = `IC+ PIN - 1 <br> ${config_mapeamento.connectorICp} - ${config_mapeamento.labelICp}`;
+
+                $("#node-input-IA_value").prop("max",config_mapeamento.current_limit);
+                $("#node-input-IB_value").prop("max",config_mapeamento.current_limit);
+                $("#node-input-IC_value").prop("max",config_mapeamento.current_limit);
+                
+                $("#node-input-IA_value_solo").prop("max",config_mapeamento.current_limit); 
+                $("#node-input-IB_value_solo").prop("max",config_mapeamento.current_limit); 
+                $("#node-input-IC_value_solo").prop("max",config_mapeamento.current_limit);
+
+            }else {
+                document.getElementById("IA").innerText = "IA";
+                document.getElementById("IB").innerText = "IB";
+                document.getElementById("IC").innerText = "IC";
+
+                $("#node-input-IA_value").prop("max",""); 
+                $("#node-input-IB_value").prop("max",""); 
+                $("#node-input-IC_value").prop("max","");
+                
+                $("#node-input-IA_value_solo").prop("max",""); 
+                $("#node-input-IB_value_solo").prop("max",""); 
+                $("#node-input-IC_value_solo").prop("max","");
             }
-            else {
-                document.getElementById("VA").innerText = "VA";
-                document.getElementById("VB").innerText = "VB";
-                document.getElementById("VC").innerText = "VC";
-            }
 
-            // self.controle = self.qtdSetCurrent;
+            $(".type_mode").on("change", function(e) {
 
-            // for(var i=1; i<=self.controle; i++){
-            //     $(".setcurrent"+i).show();
-            // }
-            // if(!self.controle || self.controle < 0){
-            //     self.controle = 0;
-            // }
-            // $("#addSetCurrent").click(function(){
-            //     self.controle = self.controle+1 <= 24 ? self.controle + 1 : 24;
+                var mode = $(this).val();
+                if (mode === "mono") {$(".MONO").show();$(".TRI").hide();}
+                if (mode === "tri") {$(".TRI").show();$(".MONO").hide(); }
 
-            //     $(".setcurrent"+self.controle).show();
-            //     console.log(self.controle);
-            // });
-            // $("#remSetCurrent").click(function(){
-            //     $(".setcurrent"+self.controle).hide();
-            //     self.controle = self.controle-1 >= 0 ? self.controle - 1 : 0;
-            //     console.log(self.controle);
-            // });
+            });
+
+            $(".c_select").on("change", function(e) {
+                var selected = $(this).val();
+                if (selected === "IA") {$("#node-input-IA_value_solo").show(); $("#node-input-IB_value_solo").hide(); $("#node-input-IC_value_solo").hide();}
+                if (selected === "IB") {$("#node-input-IA_value_solo").hide(); $("#node-input-IB_value_solo").show(); $("#node-input-IC_value_solo").hide();}
+                if (selected === "IC") {$("#node-input-IA_value_solo").hide(); $("#node-input-IB_value_solo").hide(); $("#node-input-IC_value_solo").show();}
+            });
+
+            $(".current_values").keyup(function(e){
+
+                var who = $(this).data('c');
+                var value = $(this).val();
+
+                if(who === 'IA_value'){ 
+                    if(value > 0){ 
+                        $('#node-input-IA').prop( "checked", true );
+                        $('#node-input-IB').prop( "checked", true );
+                        $('#node-input-IC').prop( "checked", true );
+                    } else if(value === ''){ 
+                        $('#node-input-IA').prop( "checked", false );
+                        $('#node-input-IB').prop( "checked", false );
+                        $('#node-input-IC').prop( "checked", false ); 
+                    }
+                
+                    $("#node-input-IA_value").val(value); 
+                    $("#node-input-IB_value").val(value); 
+                    $("#node-input-IC_value").val(value);
+                    
+                    $("#node-input-IA_value_solo").val(value); 
+                    $("#node-input-IB_value_solo").val(value); 
+                    $("#node-input-IC_value_solo").val(value); 
+                }
+                if(who === 'IB_value'){
+                    if(value > 0){ 
+                        $('#node-input-IB').prop( "checked", true );
+                        $('#node-input-IC').prop( "checked", true );
+                    }else if(value === ''){ 
+                        $('#node-input-IB').prop( "checked", false );
+                        $('#node-input-IC').prop( "checked", false );
+                    }
+
+                    $("#node-input-IB_value").val(value); 
+                    $("#node-input-IB_value_solo").val(value); 
+
+                    $("#node-input-IC_value").val(value); 
+                    $("#node-input-IC_value_solo").val(value); 
+                }
+                if(who === 'IC_value'){
+                    if(value > 0){ 
+                        $('#node-input-IC').prop( "checked", true ); 
+                    }else if(value === ''){ 
+                        $('#node-input-IC').prop( "checked", false );
+                    }
+                    
+                    $("#node-input-IC_value").val(value); 
+                    $("#node-input-IC_value_solo").val(value); 
+                }
+
+
+            });
+
         },
         oneditsave: function() {
             // this.qtdSetCurrent = this.controle;
@@ -88,432 +130,118 @@
 
 </script>
 <style>
-    label{
-        width: 100% !important;
-        margin-bottom: 2px !important;
-    }
-    .columm{
-        display: flex !important;
-        flex-direction: column !important;
-    }
-    hr {
-        width: 40% !important;
-        float: left !important;
-    }
-    .hr-div-setCurrent{
-        display: flex !important;
-        justify-content: space-between !important;
-        /* margin-top: 400px !important; */
-    }
-    .optional{
-        height: max-content !important;
-        margin-top: 10px !important;
-    }
-    .descript{
-        text-align: center;
-    }
-    .columm{
-        display: flex !important;
-        flex-direction: column !important;
-    }
-
-
-    .columm-30{
-        display: flex !important;
-        flex-direction: column !important;
-        width: 30% !important;
-        float: left !important;
-    }
-    .columm-50{
-        display: flex !important;
-        flex-direction: column !important;
-        width: 50% !important;
-        float: left !important;
-    }
-
-
-    .columm-70{
-        display: flex !important;
-        flex-direction: column !important;
-        width: 70% !important;
-        float: left !important;
-    }
-
-    .descript-div{
-        max-width: 444px !important;
-    }
-
-    span.red-ui-typedInput-type-label {
-    /* background: chartreuse; */
-    /* display: block; */
-    width: 250px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    }
-
-    .btn-aln{
-        display: flex !important;
-        flex-direction: row-reverse !important;
-        /* padding-left: 30px; */
-        align-content: center;
-        align-items: flex-end;
-    }
-
-    .check{
-    width: 20px !important;
-    margin-top: 0px !important;
-    margin-bottom: 3px;
-    }
-
-    .label-check{
-        width: 50px !important;
-        margin: 0px !important;
-    }
-
+     label { width: 100% !important; margin-bottom: 2px !important; }
+    .columm { display: flex !important; flex-direction: column !important; }
+    hr { width: 40% !important; float: left !important; }
+    .hr-div-setVoltage { display: flex !important; justify-content: space-between !important; }
+    .optional { height: max-content !important; margin-top: 10px !important; }
+    .descript { text-align: center; }
+    .columm { display: flex !important; flex-direction: column !important; }
+    .columm-25 { display: flex !important; flex-direction: column !important; width: 25% !important; float: left !important; align-items: center; justify-content: space-between; }
+    .columm-30 { display: flex !important; flex-direction: column !important; width: 30% !important; float: left !important; }
+    .columm-50 { display: flex !important; flex-direction: column !important; width: 50% !important; float: left !important; }
+    .columm-70 { display: flex !important; flex-direction: column !important; width: 70% !important; float: left !important; }
+    .descript-div { max-width: 444px !important; }
+    span.red-ui-typedInput-type-label { width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .btn-aln { display: flex !important; flex-direction: row-reverse !important; align-content: center; align-items: flex-end; }
+    .check{ width: 20px !important; margin-top: 0px !important; margin-bottom: 3px; }
+    .label-check{ width: 200px !important; margin: 0px !important; }
+    .row { display: flex; flex-direction: row; align-items: center; }
+    .row label { margin: 0; margin-left: 5px;}
+    .form-row2 { display: flex; flex-direction: row; justify-content: space-between;}
+    .box-style { background: #e0e0e0; padding: 18px; border-radius: 4px; box-shadow: 0px 0px 7px 0px #868686; }
+    .container-tester { display: flex; min-width: 620px; width: 100%; flex-direction: column; }
+    .OBS { padding: 12px; background: #f9b9b2; text-align: left; font-weight: 600; border-radius: 4px; margin-top: 15px !important;}
 </style>
 
 <script type="text/html" data-template-name="set_current">
     <div class="form-row columm descript-div">
         <strong class="descript">
-            Programs a current value that will be used
+            Bloco para configuração do valor de corrente e chaveamento de reles de corrente das fases A, B e C.   
         </strong>
+        <p class="OBS">
+            <strong> Obs: </strong> Os relés IA, IB e IC podem estar recebendo sinal de apenas um canal de corrente dependendo da configuração utilizada no hardware. 
+        </p>
     </div>
     <div style=" position: relative; display:flex; margin-top: 20px;">
         <div class="form-row columm-70">
             <label style="width: 50% !important;" for="node-input-name" ><i class="fa fa-tag"></i> Identification Note</label>
             <input type="text" id="node-input-name" placeholder="Name" style="width: 100%">
         </div>
-    <!--
-        <div class="form-row columm-30" style="align-items: flex-end !important;">
-            <label style="width: max-content !important; padding-right: 24px;"><i class="fa fa-list-ul"></i> Item</label>
-            <div class="form-row btn-aln" >
-                <a id="addSetCurrent" class="red-ui-button" ><i class="fa fa-plus"></i></a>
-                <a id="remSetCurrent" class="red-ui-button" style="margin-right: 5px;" ><i class="fa fa-minus"></i></a>
-            </div>
-        </div>
-    -->
     </div>
      <div class="form-row columm">
         <label for="node-input-mapeamento"><i class="fa fa-map"></i> PCI Connection Map</label>
         <input type="text" id="node-input-mapeamento">
     </div>
 
-    <div style=" position: relative; display:flex; margin-top: 20px;" class="form-row columm">
-        <label  for="node-input-slot"><i class="fa fa-sliders"></i> Slot</label>
-        <input type="number" id="node-input-slot" style="width:20%;">
-    </div>
-    <!-- <div class="form-row" style="display:flex; justify-content: space-between;">
-        <button  class="btn-uni btn-add"  type="button" id="addSetCurrent"> <i class="fa fa-plus" style="margin-right: 5px; font-size: 15px;"></i></button>
-        <button class="btn-uni btn-remove"   type="button" id="remSetCurrent"> <i class="fa fa-trash" style="margin-right: 10px; font-size: 15px;"></i></button>
-    </div> -->
-    <div class="hr-div-setCurrent">
-        <hr>
-        <span class="optional">Current 0</span>
-        <hr>
-    </div>
-    
-    <div class= "form-row columm">
-        <label for="node-input-current_value" ><i class="fa fa-tag"></i> current value</label>
-        <input type="number" step="any" min="0" max="14" id="node-input-current_value" placeholder="current_value" style="width:39%;">
-    </div>
-<!-- 
-    <div class= "form-row">
-    <input class="check" type="checkbox" id="node-input-phase_selector1"checked>
-    <label class="label-check" id="VA" for="node-input-phase_selector1"></label>
-  
-    </div>
-    
-    <div class= "form-row">
-        <input class="check" type="checkbox" id="node-input-phase_selector2"checked>
-    <label class="label-check" id="VB" for="node-input-phase_selector2"></label>
-    </div>
+    <div class="container-teste">
+        <div class="hr-div-setVoltage">
+            <hr> <span class="optional">Current 0</span> <hr>
+        </div>
+        <div class='form-row columm-50' style='margin-top: 8px;'>
+            <label for='node-input-type_mode'><i class='fa fa-bars'></i> Mode:</label>
+            <select class='type_mode' id='node-input-type_mode' style='width: 140px;'>
+                <option value='mono'>MONO</option>
+                <option value='tri'>TRI</option>
+            </select> 
+        </div>
+        <div class="form-row" style='max-width: 500px;'>
 
-    <div class= "form-row">
-        <input class="check" type="checkbox" id="node-input-phase_selector3"checked>
-    <label class="label-check" id="VC" for="node-input-phase_selector3"></label>
-   
-    </div>
+            <div class='form-row MONO' style='margin-top: 8px;'>
+                <label for='node-input-c_select'><i class='fa fa-bolt'></i> Type:</label>
+                <select class='c_select' id='node-input-c_select' style='width: 140px;'>
+                    <option value='IA' selected>IA</option>
+                    <option value='IB'>IB</option>
+                    <option value='IC'>IC</option>
+                </select>
+                <input type="number" step="any" min="0" id="node-input-IA_value_solo" class="current_values" data-c="IA_value" placeholder="IA value" style="width: 140px; margin-left: 10px;">
+                <input type="number" step="any" min="0" id="node-input-IB_value_solo" class="current_values" data-c="IB_value" placeholder="IB value" style="width: 140px; margin-left: 10px; display:none">
+                <input type="number" step="any" min="0" id="node-input-IC_value_solo" class="current_values" data-c="IC_value" placeholder="IC value" style="width: 140px; margin-left: 10px; display:none">
+            </div>
 
-    <div class= "form-row">
-        <input class="check" type="checkbox" id="node-input-phase_selector4"checked>
-    <label class="label-check" id="IABC" for="node-input-phase_selector4"> IABC </label> -->
-  
-    </div>
-    <!-- 
-    <div class="setcurrent1" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 1</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value1 columm">
-            <label for="node-input-current_value1"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value1" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent2" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 2</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value2 columm">
-            <label for="node-input-current_value2"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value2" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent3" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 3</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value3 columm">
-            <label for="node-input-current_value3"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value3" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent4" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 4</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value4 columm">
-            <label for="node-input-current_value4"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value4" type="number" required="required"   min="0" max="360" style="width: 30%;">
+            <div class='form-row2 TRI' style='margin-top: 8px; margin-bottom: 20px; display:none;'>
+                <div class='columm' style='margin-top: 8px;'>
+                    <select class='c_select' id='node-input-_select1' disabled style='width: 140px;'>
+                        <option value='IA'selected>IA</option>
+                    </select>
+                    <input type="number" step="any" min="0" class="current_values" id="node-input-IA_value" data-c="IA_value" placeholder="IA value" style="width: 140px; margin-top: 10px;">
+                </div>
+                <div class='columm' style='margin-top: 8px;'>
+                    <select class='c_select' id='node-input-_select2' disabled style='width: 140px;'>
+                        <option value='IB' selected>IB</option>
+                    </select>
+                    <input type="number" step="any" min="0" class="current_values" id="node-input-IB_value" data-c="IB_value" placeholder="IB value" style="width: 140px; margin-top: 10px;">
+                </div>
+                <div class='columm' style='margin-top: 8px;'>
+                    <select class='c_select' id='node-input-_select3' disabled style='width: 140px;'>
+                        <option value='IC' selected>IC</option>
+                    </select>
+                    <input type="number" step="any" min="0" class="current_values" id="node-input-IC_value" data-c="IC_value" placeholder="IC value" style="width: 140px; margin-top: 10px;">
+                </div>
+            </div>
+            
+            <div class= "form-row2 box-style">
+                <div class="columm-30" style="align-items: center;">
+                    <div class="row">
+                        <input class="check" type="checkbox" id="node-input-IA">
+                        <label id="IA" for="node-input-IA" slyle="margin-bottom: 0px; max-width:100px;">IA</label>
+                    </div>
+                </div>
+                <div class="columm-30" style="align-items: center;">
+                    <div class="row">
+                        <input class="check" type="checkbox" id="node-input-IB">
+                        <label id="IB" for="node-input-IB" slyle="margin-bottom: 0px; max-width:100px;">IB</label>
+                    </div>
+                </div>
+                <div class="columm-30" style="align-items: center;">
+                    <div class="row">
+                        <input class="check" type="checkbox" id="node-input-IC">
+                        <label id="IC" for="node-input-IC" slyle="margin-bottom: 0px; max-width:100px;">IC</label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="setcurrent5" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 5</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value5 columm">
-            <label for="node-input-current_value5"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value5" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent6" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 6</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value6 columm">
-            <label for="node-input-current_value6"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value6" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent7" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 7</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value7 columm">
-            <label for="node-input-current_value7"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value7" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent8" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 8</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value8 columm">
-            <label for="node-input-current_value8"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value8" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent9" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 9</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value9 columm">
-            <label for="node-input-current_value9"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value9" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent10" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 10</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value10 columm">
-            <label for="node-input-current_value10"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value10" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent11" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 11</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value11 columm">
-            <label for="node-input-current_value11"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value11" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent12" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 12</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value12 columm">
-            <label for="node-input-current_value12"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value12" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent13" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 13</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value13 columm">
-            <label for="node-input-current_value13"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value13" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent14" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 14</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value14 columm">
-            <label for="node-input-current_value14"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value14" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent15" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 15</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value15 columm">
-            <label for="node-input-current_value15"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value15" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent16" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 16</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value16 columm">
-            <label for="node-input-current_value16"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value16" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent17" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 17</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value17 columm">
-            <label for="node-input-current_value17"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value17" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent18" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 18</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value18 columm">
-            <label for="node-input-current_value18"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value18" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent19" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 19</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value19 columm">
-            <label for="node-input-current_value19"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value19" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent20" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 20</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value20 columm">
-            <label for="node-input-current_value20"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value20" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent21" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 21</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value21 columm">
-            <label for="node-input-current_value21"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value21" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent22" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 22</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value22 columm">
-            <label for="node-input-current_value22"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value22" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent23" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 23</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value23 columm">
-            <label for="node-input-current_value23"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value23" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div>
-    <div class="setcurrent24" style="display: none;">
-        <div class="hr-div-setCurrent">
-            <hr>
-            <span class="optional">Current 24</span>
-            <hr>
-        </div>
-        <div class="form-row node-input-current_value24 columm">
-            <label for="node-input-current_value24"><i class="fa fa-sign-out"></i> current Value</label>
-            <input  id="node-input-current_value24" type="number" required="required"   min="0" max="360" style="width: 30%;">
-        </div>
-    </div> -->
-    <!-- <div class="hr-div-setCurrent">
-        <hr>
-        <span class="optional">Optional</span>
-        <hr>
-    </div>
-    <div class="form-row columm">
-        <label style="width: 50% !important;" for="node-input-name" ><i class="fa fa-tag"></i> Component Nickname</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div> -->
 </script>
 
 <script type="text/html" data-help-name="set_current">

@@ -1,99 +1,85 @@
 module.exports = function(RED) {
 
-    function multipleSetCurrent(self, file, slot, currentMode) {
-        for (var t = 0; t < self.qtdSetCurrent; t++) {
-            var command_n = {
-                type: "AC_POWER_SOURCE_modular_V1_0",
-                slot: parseInt(self.slot),
-                method: "set_current",
-                current_value: parseFloat(self.current_value_n[t]),
-                get_output: {},
-                compare: {}
-            }
-            if (!(slot === "begin" || slot === "end")) {
-                if (currentMode == "test") {
-                    file.slots[slot].jig_test.push(command_n);
-                } else {
-                    file.slots[slot].jig_error.push(command_n);
-                }
-            } else {
-                if (slot === "begin") {
-                    file.slots[0].jig_test.push(command_n);
-                } else {
-                    file.slots[3].jig_test.push(command_n);
-                }
-            }
-        }
-        return file;
-    }
+    var mapeamentoNode;
 
     function SetCurrentNode(config) {
         RED.nodes.createNode(this, config);
-        this.current_value = config.current_value;
-        this.slot = config.slot;
+        this.mapeamento = config.mapeamento;
+        this.type_mode = config.type_mode;
+        this.c_select = config.c_select;
+        this.IA = config.IA;
+        this.IB = config.IB;
+        this.IC = config.IC;
+        this.IA_value = config.IA_value;
+        this.IB_value = config.IB_value;
+        this.IC_value = config.IC_value;
+        this.IA_value_solo = config.IA_value_solo;
+        this.IB_value_solo = config.IB_value_solo;
+        this.IC_value_solo = config.IC_value_solo;
 
-        // this.qtdSetCurrent = config.qtdSetCurrent;
-        // this.current_value_n = [];
-        // this.current_value_n.push(config.current_value1);
-        // this.current_value_n.push(config.current_value2);
-        // this.current_value_n.push(config.current_value3);
-        // this.current_value_n.push(config.current_value4);
-        // this.current_value_n.push(config.current_value5);
-        // this.current_value_n.push(config.current_value6);
-        // this.current_value_n.push(config.current_value7);
-        // this.current_value_n.push(config.current_value8);
-        // this.current_value_n.push(config.current_value9);
-        // this.current_value_n.push(config.current_value10);
-        // this.current_value_n.push(config.current_value11);
-        // this.current_value_n.push(config.current_value12);
-        // this.current_value_n.push(config.current_value13);
-        // this.current_value_n.push(config.current_value14);
-        // this.current_value_n.push(config.current_value15);
-        // this.current_value_n.push(config.current_value16);
-        // this.current_value_n.push(config.current_value17);
-        // this.current_value_n.push(config.current_value18);
-        // this.current_value_n.push(config.current_value19);
-        // this.current_value_n.push(config.current_value20);
-        // this.current_value_n.push(config.current_value21);
-        // this.current_value_n.push(config.current_value22);
-        // this.current_value_n.push(config.current_value23);
-        // this.current_value_n.push(config.current_value24);
 
         var node = this;
+        mapeamentoNode = RED.nodes.getNode(this.mapeamento);
 
         node.on('input', function(msg, send, done) {
             var globalContext = node.context().global;
             var exportMode = globalContext.get("exportMode");
             var currentMode = globalContext.get("currentMode");
-            var command = {
-                type: "AC_POWER_SOURCE_modular_V1_0",
-                slot: parseInt(node.slot),
-                method: "set_current",
-                current_value: parseFloat(node.current_value),
-                get_output: {},
-                compare: {}
-            };
+
+            if(node.type_mode === 'mono'){
+
+                var current_value;
+                if(node.c_select === 'IA'){ current_value = node.IA_value_solo === "" ? 0 : parseFloat(node.IA_value_solo); }
+                if(node.c_select === 'IB'){ current_value = node.IB_value_solo === "" ? 0 : parseFloat(node.IB_value_solo); }
+                if(node.c_select === 'IC'){ current_value = node.IC_value_solo === "" ? 0 : parseFloat(node.IC_value_solo); }
+
+                var mono_command = {
+                    type: "AC_power_source_virtual_V1_0", 
+                    slot: parseInt(mapeamentoNode.slot),
+                    method: "set_current_mono",
+                    compare:{},
+                    phase_select:0,
+                    current_value: current_value,
+                    IA: node.IA,
+                    IB: node.IB,
+                    IC: node.IC
+                };
+                command = mono_command;
+               
+            }else {
+
+                var tri_command = {
+                    type: "AC_power_source_virtual_V1_0",
+                    slot: parseInt(mapeamentoNode.slot),
+                    method: "set_current_tri",
+                    compare:{},
+                    current_A: node.IA_value === "" ? 0 : parseFloat( node.IA_value),
+                    current_B: node.IB_value === "" ? 0 : parseFloat( node.IB_value),
+                    current_C: node.IC_value === "" ? 0 : parseFloat( node.IC_value),
+                    IA: node.IA,
+                    IB: node.IB,
+                    IC: node.IC,
+                };
+                command = tri_command;
+
+            }
+
             var file = globalContext.get("exportFile");
             var slot = globalContext.get("slot");
             if (!(slot === "begin" || slot === "end")) {
                 if (currentMode == "test") {
                     file.slots[slot].jig_test.push(command);
-                    // file = multipleSetCurrent(node, file, slot, currentMode);
                 } else {
                     file.slots[slot].jig_error.push(command);
-                    // file = multipleSetCurrent(node, file, slot, currentMode);
                 }
             } else {
                 if (slot === "begin") {
                     file.slots[0].jig_test.push(command);
-                    // file = multipleSetCurrent(node, file, slot, currentMode);
                 } else {
                     file.slots[3].jig_test.push(command);
-                    // file = multipleSetCurrent(node, file, slot, currentMode);
                 }
             }
             globalContext.set("exportFile", file);
-            console.log(command);
             send(msg);
         });
     }
