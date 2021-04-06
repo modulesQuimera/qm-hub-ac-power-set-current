@@ -1,6 +1,6 @@
 {
   "name": "qm-ac-power-set-current",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Component set current | AC Power Source Module | Node-red",
   "main": "set_current.js",
   "scripts": {
